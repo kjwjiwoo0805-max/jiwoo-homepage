@@ -6,6 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KIM JIWOO | Personal Website</title>
 
+<script>
+(() => {
+  let theme;
+  try { theme = localStorage.getItem('jiwoo-theme'); } catch (_) {}
+  if (theme !== 'light' && theme !== 'dark') {
+    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.dataset.theme = theme;
+})();
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
@@ -17,6 +27,24 @@
   --text: #354453;
   --muted: #8493a1;
   --line: #e3eaf0;
+  --background: #fff;
+  --header: rgba(255,255,255,.94);
+  --button-text: #fff;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --navy: #dce9f7;
+  --blue: #9cc3e6;
+  --light-blue: #1a2c3e;
+  --pale: #14212e;
+  --text: #d5dfe9;
+  --muted: #a6b6c6;
+  --line: #34475a;
+  --background: #101a24;
+  --header: rgba(16,26,36,.94);
+  --button-text: #101a24;
+  color-scheme: dark;
 }
 
 * {
@@ -32,7 +60,7 @@ html {
 body {
   font-family: 'DM Sans', 'Noto Sans KR', sans-serif;
   color: var(--text);
-  background: #fff;
+  background: var(--background);
   line-height: 1.7;
 }
 
@@ -52,7 +80,7 @@ header {
   display: flex;
   align-items: center;
   border-bottom: 1px solid var(--line);
-  background: rgba(255,255,255,.94);
+  background: var(--header);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -84,6 +112,28 @@ nav {
 .nav-links a:hover {
   color: var(--blue);
 }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.theme-toggle {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  background: var(--background);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.theme-toggle:hover { border-color: var(--blue); }
+.theme-toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 
 /* Hero */
 .hero {
@@ -128,7 +178,7 @@ nav {
   display: inline-block;
   padding: 12px 25px;
   background: var(--navy);
-  color: white;
+  color: var(--button-text);
   font-size: 13px;
   transition: .25s;
 }
@@ -213,7 +263,7 @@ section {
 }
 
 .major-card {
-  background: white;
+  background: var(--background);
   padding: 40px;
   border-left: 3px solid var(--blue);
 }
@@ -346,6 +396,10 @@ footer {
 
 /* Responsive */
 @media(max-width: 700px) {
+  header { height: auto; min-height: 76px; padding: 16px 0; }
+  nav { flex-wrap: wrap; gap: 12px; }
+  .nav-actions { flex-wrap: wrap; gap: 12px; }
+
   .nav-links {
     gap: 12px;
     font-size: 11px;
@@ -386,11 +440,14 @@ footer {
 <header>
   <nav>
     <a href="#" class="logo">KIM JIWOO.</a>
+    <div class="nav-actions">
     <div class="nav-links">
       <a href="#profile">PROFILE</a>
       <a href="#major">MAJOR</a>
       <a href="#favorites">FAVORITES</a>
       <a href="#dog">GUREUM</a>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="다크 모드" aria-pressed="false" hidden>다크 모드</button>
     </div>
   </nav>
 </header>
@@ -575,5 +632,25 @@ footer {
   © 2026 KIM JIWOO. ALL RIGHTS RESERVED.
 </footer>
 
+<script>
+(() => {
+  const button = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const updateButton = () => {
+    const dark = root.dataset.theme === 'dark';
+    button.textContent = dark ? '☀ 화이트 모드' : '☾ 다크 모드';
+    button.setAttribute('aria-label', '다크 모드');
+    button.setAttribute('aria-pressed', String(dark));
+  };
+  button.hidden = false;
+  updateButton();
+  button.addEventListener('click', () => {
+    const theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = theme;
+    try { localStorage.setItem('jiwoo-theme', theme); } catch (_) {}
+    updateButton();
+  });
+})();
+</script>
 </body>
 </html>
